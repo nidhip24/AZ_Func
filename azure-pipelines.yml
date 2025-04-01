@@ -23,8 +23,8 @@ stages:
   - stage: Test
     displayName: 'Test Stage'
     lockBehavior: sequential
-        variables:
-          - group: build_lock
+    variables:
+      - group: build_lock
     jobs:
       - job: Test
         displayName: 'Run Unit Tests'
