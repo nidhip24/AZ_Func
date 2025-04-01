@@ -2,6 +2,9 @@ stages:
   
   - stage: Build
     displayName: 'Build Stage'
+    lockBehavior: sequential
+    variables:
+      - group: build_lock
     jobs:
       - job: Build
         displayName: 'Install Dependencies'
@@ -19,6 +22,9 @@ stages:
 
   - stage: Test
     displayName: 'Test Stage'
+    lockBehavior: sequential
+        variables:
+          - group: build_lock
     jobs:
       - job: Test
         displayName: 'Run Unit Tests'
@@ -28,6 +34,9 @@ stages:
 
   - stage: Deploy
     displayName: 'Deploy Stage'
+    lockBehavior: sequential
+    variables:
+      - group: build_lock
     jobs:
       - deployment: DeployFunction
         displayName: 'Deploy to Azure Function App'
