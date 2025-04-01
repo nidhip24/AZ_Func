@@ -1,13 +1,14 @@
 stages:
-  
+
   - stage: Build
     displayName: 'Build Stage'
-    lockBehavior: sequential
     variables:
       - group: build_lock
     jobs:
       - job: Build
         displayName: 'Install Dependencies'
+        pool:
+          name: 'NKMachine'  # Ensure this is the correct self-hosted agent pool name
         steps:
           - task: NodeTool@0
             inputs:
@@ -22,31 +23,33 @@ stages:
 
   - stage: Test
     displayName: 'Test Stage'
-    lockBehavior: sequential
     variables:
       - group: build_lock
     jobs:
       - job: Test
         displayName: 'Run Unit Tests'
+        pool:
+          name: 'NKMachine'  # Ensure this is the correct self-hosted agent pool name
         steps:
           - script: npm test
             displayName: 'Run Tests with Jest'
 
   - stage: Deploy
     displayName: 'Deploy Stage'
-    lockBehavior: sequential
     variables:
       - group: build_lock
     jobs:
       - deployment: DeployFunction
         displayName: 'Deploy to Azure Function App'
         environment: production
+        pool:
+          name: 'NKMachine'  # Ensure this is the correct self-hosted agent pool name
         strategy:
           runOnce:
             deploy:
               steps:
                 - task: AzureFunctionApp@1
                   inputs:
-                    azureSubscription: 'AZFunction'  # Set up in Azure DevOps
+                    azureSubscription: 'AZFunction'  # Ensure this Service Connection exists in Azure DevOps
                     appName: 'HelloFunction'  # Name of your Azure Function App
                     package: '$(Build.ArtifactStagingDirectory)'  # Path to built files
