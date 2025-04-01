@@ -31,6 +31,12 @@ stages:
         pool:
           name: 'NKMachine'  # Ensure this is the correct self-hosted agent pool name
         steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18.x'
+            displayName: 'Use Node.js'
+          - script: npm install
+            displayName: 'Install Dependencies'
           - script: npm test
             displayName: 'Run Tests with Jest'
 
