@@ -41,6 +41,6 @@ stages:
               steps:
                 - task: AzureFunctionApp@1
                   inputs:
-                    azureSubscription: 'Your-Service-Connection'  # Set up in Azure DevOps
-                    appName: 'MyFunctionApp'  # Name of your Azure Function App
+                    azureSubscription: 'AZFunction'  # Set up in Azure DevOps
+                    appName: 'HelloFunction'  # Name of your Azure Function App
                     package: '$(Build.ArtifactStagingDirectory)'  # Path to built files
