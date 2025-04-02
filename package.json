@@ -1,14 +1,18 @@
 {
-  "devDependencies": {
-    "jest": "^29.7.0",
-    "node-mocks-http": "^1.16.2",
-    "supertest": "^7.1.0"
-  },
-  "scripts": {
-    "test": "jest",
-    "build": "webpack"
-  },
-  "dependencies": {
-    "@azure/functions": "^4.7.0"
+    "name": "hello-function-nk",
+    "version": "1.0.0",
+    "description": "Simple Azure Function",
+    "scripts": {
+      "start": "func start",
+      "test": "jest",
+      "lint": "eslint ."
+    },
+    "dependencies": {
+      "@azure/functions": "^3.0.0"
+    },
+    "devDependencies": {
+      "eslint": "^8.0.0",
+      "jest": "^27.0.0",
+      "supertest": "^6.0.0"
+    }
   }
-}
