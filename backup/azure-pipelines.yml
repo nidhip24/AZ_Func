@@ -1,0 +1,78 @@
+stages:
+
+  - stage: Build
+    displayName: 'Build Stage'
+    jobs:
+      - job: Build
+        pool:
+          name: 'NKMachine'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18.x'
+            displayName: 'Use Node.js'
+          - script: npm install
+            displayName: 'Install Dependencies'
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: $(Build.SourcesDirectory)
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: $(Build.ArtifactStagingDirectory)/functionapp.zip
+              replaceExistingArchive: true
+            displayName: 'Package Function App'
+          
+          # Publish the packaged ZIP file as an artifact
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: $(Build.ArtifactStagingDirectory)/functionapp.zip
+              ArtifactName: functionapp
+              publishLocation: 'Container'
+            displayName: 'Publish Artifact: functionapp.zip'
+
+  - stage: Test
+    displayName: 'Test Stage'
+    variables:
+      - group: build_lock
+    jobs:
+      - job: Test
+        displayName: 'Run Unit Tests'
+        pool:
+          name: 'NKMachine'  # Ensure this is the correct self-hosted agent pool name
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18.x'
+            displayName: 'Use Node.js'
+          - script: npm install
+            displayName: 'Install Dependencies'
+          - script: npm test
+            displayName: 'Run Tests with Jest'
+
+  - stage: Deploy
+    displayName: 'Deploy Stage'
+    jobs:
+      - deployment: DeployFunction
+        displayName: 'Deploy to Azure Function App'
+        environment: production
+        pool:
+          name: 'NKMachine'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                # Download the artifact from the build stage
+                - task: DownloadBuildArtifacts@0
+                  inputs:
+                    artifactName: functionapp
+                    downloadPath: $(Pipeline.Workspace)
+                  displayName: 'Download Artifact: functionapp.zip'
+
+                # Deploy to Azure Function App
+                - task: AzureFunctionApp@1
+                  inputs:
+                    azureSubscription: 'AZFunction'
+                    appName: 'HelloFunctionNK'
+                    package: $(Pipeline.Workspace)/functionapp/functionapp.zip
+                    deploymentMethod: 'zipDeploy'
+                  displayName: 'Deploy to Azure Function App'
