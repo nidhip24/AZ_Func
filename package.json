@@ -1,19 +1,22 @@
 {
-  "name": "",
+  "name": "hellofunctionnk",
   "version": "1.0.0",
   "description": "",
   "main": "src/functions/*.js",
   "scripts": {
     "start": "func start",
-    "test": "echo \"No tests yet...\"",
+    "test": "jest",
     "build": "webpack"
   },
   "dependencies": {
-    "@azure/functions": "^4.0.0"
+    "@azure/functions": "^4.7.0"
   },
   "devDependencies": {
     "azure-functions-core-tools": "^4.x",
     "webpack": "^5.98.0",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "jest": "^29.7.0",
+    "node-mocks-http": "^1.16.2",
+    "supertest": "^7.1.0"
   }
 }
