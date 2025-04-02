@@ -73,6 +73,6 @@ stages:
                   inputs:
                     azureSubscription: 'AZFunction'
                     appName: 'HelloFunctionNK'
-                    package: $(Pipeline.Workspace)/functionapp.zip
+                    package: $(Pipeline.Workspace)/functionapp/functionapp.zip
                     deploymentMethod: 'zipDeploy'
                   displayName: 'Deploy to Azure Function App'
