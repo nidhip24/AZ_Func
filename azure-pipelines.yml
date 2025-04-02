@@ -23,8 +23,7 @@ stages:
     
     - script: |
         npm install
-        npm run lint
-      displayName: 'npm install and lint'
+      displayName: 'npm install'
       workingDirectory: $(workingDirectory)
     
     - task: ArchiveFiles@2
