@@ -21,12 +21,12 @@ stages:
               archiveFile: $(Build.ArtifactStagingDirectory)/functionapp.zip
               replaceExistingArchive: true
             displayName: 'Package Function App'
-          
-          # Publish the packaged ZIP file as an artifact
+
+          # Publish the artifact to make it available for the Deploy stage
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: $(Build.ArtifactStagingDirectory)/functionapp.zip
-              ArtifactName: functionapp
+              ArtifactName: 'functionapp'   # Use a name for the artifact
               publishLocation: 'Container'
             displayName: 'Publish Artifact: functionapp.zip'
 
@@ -64,15 +64,15 @@ stages:
                 # Download the artifact from the build stage
                 - task: DownloadBuildArtifacts@0
                   inputs:
-                    artifactName: functionapp
-                    downloadPath: $(Pipeline.Workspace)
+                    artifactName: 'functionapp'  # Artifact name used in the build stage
+                    downloadPath: $(Pipeline.Workspace)/functionapp
                   displayName: 'Download Artifact: functionapp.zip'
 
-                # Deploy to Azure Function App
+                # Deploy the function app from the downloaded artifact
                 - task: AzureFunctionApp@1
                   inputs:
                     azureSubscription: 'AZFunction'
                     appName: 'HelloFunctionNK'
-                    package: $(Pipeline.Workspace)/functionapp.zip
+                    package: $(Pipeline.Workspace)/functionapp/functionapp.zip  # Correct path after download
                     deploymentMethod: 'zipDeploy'
                   displayName: 'Deploy to Azure Function App'
