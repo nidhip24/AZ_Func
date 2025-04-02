@@ -47,17 +47,15 @@ stages:
       - deployment: DeployFunction
         displayName: 'Deploy to Azure Function App'
         environment: production
-        pool:
-          name: 'NKMachine'
+        
         strategy:
           runOnce:
             deploy:
               steps:
                 - task: AzureFunctionApp@1
                   inputs:
-                    azureSubscription: $(azureSubscription)
-                    appName: $(functionAppName)
+                    azureSubscription: 'AZFunction'
+                    appName: 'HelloFunctionNK'
                     package: $(Build.ArtifactStagingDirectory)/functionapp.zip
-                    resourceGroupName: $(resourceGroup)
                     deploymentMethod: 'zipDeploy'
                   displayName: 'Deploy to Azure Function App'
