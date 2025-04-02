@@ -2,24 +2,25 @@ stages:
 
   - stage: Build
     displayName: 'Build Stage'
-    variables:
-      - group: build_lock
     jobs:
       - job: Build
-        displayName: 'Install Dependencies'
         pool:
-          name: 'NKMachine'  # Ensure this is the correct self-hosted agent pool name
+          name: 'NKMachine'
         steps:
           - task: NodeTool@0
             inputs:
               versionSpec: '18.x'
             displayName: 'Use Node.js'
-          
           - script: npm install
             displayName: 'Install Dependencies'
-          
-          # - script: npm run build
-          #   displayName: 'Build Application'
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: $(Build.SourcesDirectory)
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: $(Build.ArtifactStagingDirectory)/functionapp.zip
+              replaceExistingArchive: true
+            displayName: 'Package Function App'
 
   - stage: Test
     displayName: 'Test Stage'
@@ -42,20 +43,21 @@ stages:
 
   - stage: Deploy
     displayName: 'Deploy Stage'
-    variables:
-      - group: build_lock
     jobs:
       - deployment: DeployFunction
         displayName: 'Deploy to Azure Function App'
         environment: production
         pool:
-          name: 'NKMachine'  # Ensure this is the correct self-hosted agent pool name
+          name: 'NKMachine'
         strategy:
           runOnce:
             deploy:
               steps:
                 - task: AzureFunctionApp@1
                   inputs:
-                    azureSubscription: 'AZFunction'
-                    appName: 'HelloFunctionNK'
-                    package: '$(Build.ArtifactStagingDirectory)'
+                    azureSubscription: $(azureSubscription)
+                    appName: $(functionAppName)
+                    package: $(Build.ArtifactStagingDirectory)/functionapp.zip
+                    resourceGroupName: $(resourceGroup)
+                    deploymentMethod: 'zipDeploy'
+                  displayName: 'Deploy to Azure Function App'
